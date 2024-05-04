@@ -1,0 +1,23 @@
+<!--<div class="tab-container">-->
+<!--  <div class="nav">-->
+<!--    <div [ngClass]="{active: tab == activeComponent}" class="nav-item" *ngFor="let tab of tabs">-->
+<!--      <span (click)="activateTab(tab)">{{tab.tabName}}</span>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <ng-template [ngTemplateOutlet]="activeComponent.templateRef" [ngTemplateOutletContext]=" {content: activeComponent.content}"></ng-template>-->
+<!--</div>-->
+<div class="nav-tab-container">
+  <ul class="nav nav-tabs">
+    @for(tab of tabs; track $index) {
+      <li role="presentation" [ngClass]="{ 'active': tab.id === activeTab?.id }">
+        <a href="#" (click)="onTabClick(tab)">
+          {{ tab.name }}
+          <span class="close" (click)="onTabRemove(tab)">&times;</span>
+        </a>
+      </li>
+    }
+  </ul>
+
+  <ng-template [ngTemplateOutlet]="activeTab?.templateRef" [ngTemplateOutletContext]=" { content: activeTab?.content }"></ng-template>
+</div>

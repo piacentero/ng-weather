@@ -3,6 +3,7 @@ import {WeatherService} from "../weather.service";
 import {LocationService} from "../location.service";
 import {Router} from "@angular/router";
 import {ConditionsAndZip} from '../conditions-and-zip.type';
+import { TabDirective } from '../shared/tabset/tabset.component';
 
 @Component({
   selector: 'app-current-conditions',
@@ -18,5 +19,9 @@ export class CurrentConditionsComponent {
 
   showForecast(zipcode : string){
     this.router.navigate(['/forecast', zipcode])
+  }
+
+  onTabRemove({ content }: TabDirective): void {
+    this.locationService.removeLocation((content as ConditionsAndZip).zip);
   }
 }
