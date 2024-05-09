@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import {LocationService} from "../location.service";
+import { Component, inject } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { addLocation } from '../store/weather.actions';
 
 @Component({
   selector: 'app-zipcode-entry',
@@ -7,10 +8,10 @@ import {LocationService} from "../location.service";
 })
 export class ZipcodeEntryComponent {
 
-  constructor(private service : LocationService) { }
+  private store: Store = inject(Store);
 
-  addLocation(zipcode : string){
-    this.service.addLocation(zipcode);
+  addLocation(zipCode: string): void {
+    this.store.dispatch(addLocation({ zipCode }));
   }
 
 }

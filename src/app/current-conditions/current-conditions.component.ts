@@ -1,27 +1,33 @@
-import {Component, inject, Signal} from '@angular/core';
-import {WeatherService} from "../weather.service";
-import {LocationService} from "../location.service";
-import {Router} from "@angular/router";
-import {ConditionsAndZip} from '../conditions-and-zip.type';
+import { Component, inject, OnInit } from '@angular/core';
+import { WeatherService } from '../weather.service';
+import { ConditionsAndZip } from '../conditions-and-zip.type';
 import { TabDirective } from '../shared/tabset/tabset.component';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { selectConditions } from '../store/weather.selectors';
+import { removeLocation } from '../store/weather.actions';
 
 @Component({
   selector: 'app-current-conditions',
   templateUrl: './current-conditions.component.html',
   styleUrls: ['./current-conditions.component.css']
 })
-export class CurrentConditionsComponent {
+export class CurrentConditionsComponent implements OnInit {
 
-  private weatherService = inject(WeatherService);
-  private router = inject(Router);
-  protected locationService = inject(LocationService);
-  protected currentConditionsByZip: Signal<ConditionsAndZip[]> = this.weatherService.getCurrentConditions();
+  currentConditionsByZip$: Observable<ConditionsAndZip[]>;
 
-  showForecast(zipcode : string){
-    this.router.navigate(['/forecast', zipcode])
+  private weatherService: WeatherService = inject(WeatherService);
+  private store: Store = inject(Store);
+
+  ngOnInit(): void {
+    this.currentConditionsByZip$ = this.store.select(selectConditions);
   }
 
   onTabRemove({ content }: TabDirective): void {
-    this.locationService.removeLocation((content as ConditionsAndZip).zip);
+    this.store.dispatch(removeLocation({ zipCode: (content as ConditionsAndZip).zip }));
+  }
+
+  getWeatherIcon(id: number): string {
+    return this.weatherService.getWeatherIcon(id);
   }
 }
