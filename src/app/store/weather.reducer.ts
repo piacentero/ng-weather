@@ -1,31 +1,41 @@
 import { createReducer, on } from '@ngrx/store';
-import { addLocationConditions, removeLocationConditions, setLocations, setLocationsConditions } from './weather.actions';
+import { addLocationData, addLocationsData, removeLocationData, setLocationsData } from './weather.actions';
 import { ConditionsAndZip } from '../conditions-and-zip.type';
+import { ForecastAndZip } from '../forecast-and-zip.type';
 
 export interface WeatherState {
   conditions: ConditionsAndZip[];
+  forecasts: ForecastAndZip[];
 }
 
 export const initialState: WeatherState = {
-  conditions: []
+  conditions: [],
+  forecasts: []
 }
 
 export const weatherReducer = createReducer(
   initialState,
-  on(setLocationsConditions, (state, { conditions }) => ({
+  on(setLocationsData, (state, { conditions, forecasts }) => ({
     ...state,
-    conditions
+    conditions: conditions || [],
+    forecasts: forecasts || []
   })),
-  on(setLocations, (state, { locations }) => ({
+  on(addLocationData, (state, { zipCode, conditions, forecast }) => ({
     ...state,
-    locations
+    conditions: !state.conditions.some(({ zip }) => zip === zipCode) ?
+      [...state.conditions, { zip: zipCode, data: conditions }] :
+      [...state.conditions].map(cond => {
+        return cond.zip === zipCode ? { zip: zipCode, data: conditions } : cond;
+      }),
+    forecasts: !state.forecasts.some(({ zip }) => zip === zipCode) ?
+      [...state.forecasts, { zip: zipCode, data: forecast }] :
+      [...state.forecasts].map(fore => {
+        return fore.zip === zipCode ? { zip: zipCode, data: forecast } : fore;
+      }),
   })),
-  on(addLocationConditions, (state, { conditions }) => ({
+  on(removeLocationData, (state, { zipCode }) => ({
     ...state,
-    conditions: [...state.conditions, conditions]
-  })),
-  on(removeLocationConditions, (state, { zipCode }) => ({
-    ...state,
-    conditions: [...state.conditions].filter(({ zip }) => zip !== zipCode)
+    conditions: [...state.conditions].filter(({ zip }) => zip !== zipCode),
+    forecasts: [...state.forecasts].filter(({ zip }) => zip !== zipCode)
   }))
 );
