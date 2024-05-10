@@ -36,7 +36,7 @@ export class WeatherEffects {
 
   setLocationsDataEffect$ = createEffect(() => this.actions$.pipe(
     ofType(setLocationsData),
-    map(({ conditions }) => refreshLocationsData({ zipCodes: conditions.map(({ zip }) => zip) }))
+    map(({ conditions }) => refreshLocationsData({ zipCodes: (conditions || []).map(({ zip }) => zip) }))
   ));
 
   addLocationEffect$ = createEffect(() => this.actions$.pipe(
